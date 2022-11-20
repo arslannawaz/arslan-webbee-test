@@ -36,7 +36,62 @@ class CreateCinemaSchema extends Migration
      */
     public function up()
     {
-        throw new \Exception('implement in coding task 4, you can ignore this exception if you are just running the initial migrations.');
+        Schema::create('films', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('title');
+            $table->timestamps();
+        });
+
+        Schema::create('show_rooms', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->timestamps();
+        });
+
+        Schema::create('show_times', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('film_id')->unsigned();
+            $table->integer('show_room_id')->unsigned();
+            $table->string('time');
+            $table->foreign('film_id')->references('id')->on('films')->onDelete('cascade');
+            $table->foreign('show_room_id')->references('id')->on('show_rooms')->onDelete('cascade');
+            $table->timestamps();
+        });
+
+        Schema::create('seat_type', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('type');
+            $table->string('percentage');
+            $table->timestamps();
+        });
+
+        Schema::create('seats', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('seat_type_id')->unsigned();
+            $table->foreign('seat_type_id')->references('id')->on('seat_type')->onDelete('cascade');
+            $table->timestamps();
+        });
+
+        Schema::create('bookings', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('user_id')->unsigned();
+            $table->integer('show_time_id')->unsigned();
+            $table->integer('seat_id')->unsigned();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('show_time_id')->references('id')->on('show_times')->onDelete('cascade');
+            $table->foreign('seat_id')->references('id')->on('seats')->onDelete('cascade');
+            $table->timestamps();
+        });
+
+        Schema::create('tickets', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('booking_id')->unsigned();
+            $table->integer('price');
+            $table->foreign('booking_id')->references('id')->on('bookings')->onDelete('cascade');
+            $table->timestamps();
+        });
+
+        //throw new \Exception('implement in coding task 4, you can ignore this exception if you are just running the initial migrations.');
     }
 
     /**
